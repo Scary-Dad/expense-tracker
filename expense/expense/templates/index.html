@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+<h1>Expense Tracker</h1>
+
+<form action="/add" method="post">
+    <input type="number" name="amount" placeholder="Amount" required>
+    
+    <select name="category">
+        <option>Food</option>
+        <option>Travel</option>
+        <option>Shopping</option>
+        <option>Home maintenance</option>
+        <option>Others</option>
+        <option>Bills</option>
+        <option>Health</option>
+        <option>Entertainment</option>
+    </select>
+
+    <input type="date" name="date" required>
+    <button type="submit">Add</button>
+</form>
+
+<h2>Total Expense: ₹ {{ total }}</h2>
+<h2>Expense Chart</h2>
+<canvas id="myChart" width="400" height="200"></canvas>
+
+<form method="get" action="/">
+    <select name="category">
+        <option>All</option>
+        <option>Food</option>
+        <option>Travel</option>
+        <option>Shopping</option>
+         <option>Home maintenance</option>
+        <option>Others</option>
+        <option>Bills</option>
+        <option>Health</option>
+        <option>Entertainment</option>
+    </select>
+         <!-- Month Filter -->
+    <select name="month">
+        <option value="All">All Months</option>
+        <option value="01">January</option>
+        <option value="02">February</option>
+        <option value="03">March</option>
+        <option value="04">April</option>
+        <option value="05">May</option>
+        <option value="06">June</option>
+        <option value="07">July</option>
+        <option value="08">August</option>
+        <option value="09">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+    </select>
+    <button type="submit">Filter</button>
+</form>
+<table>
+    <tr>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Action</th>
+    </tr>
+
+    {% for expense in expenses %}
+    <tr>
+        <td>{{ expense.amount }}</td>
+        <td>{{ expense.category }}</td>
+        <td>{{ expense.date }}</td>
+        <td><a href="/delete/{{ loop.index0 }}">Delete</a></td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+<script>
+    const labels = JSON.parse('{{ labels | tojson | safe }}');
+    const data = JSON.parse('{{ values | tojson | safe }}');
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    const myChart = new Chart(ctx, {
+        type: 'pie',   // 👉 change to 'bar' for bar graph
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Expenses',
+                data: data,
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+
+ </div>
+
+</body>
+</html>
